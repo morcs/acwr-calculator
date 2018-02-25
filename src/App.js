@@ -6,10 +6,14 @@ class App extends Component {
   constructor(props) {
     super(props);
     
+    const date = this.toDateInputValue(new Date());
+
     this.state = { 
-      date: new Date(),
-      intensity: null,
-      duration: null,
+      newEntry: {
+        date: date,
+        intensity: null,
+        duration: null
+      },
       entries: []
     }
 
@@ -17,19 +21,28 @@ class App extends Component {
     this.handleInputChange = this.handleInputChange.bind(this);
   }
 
+  toDateInputValue(date) {
+    const dateEl = document.createElement("input");
+    dateEl.setAttribute("type", "date");
+    dateEl.valueAsDate = new Date();
+    return dateEl.value;
+  }
+
   handleInputChange(event) {
     const target = event.target;
     const value = target.value;
     const name = target.name;
 
-    this.setState({
-      [name]: value
-    })
+    this.setState(prevState => ({
+      newEntry: Object.assign(this.state.newEntry,  {
+        [name]: value
+      })
+    }));
   }
 
   addEntry() {
     this.setState(prevState => ({
-      entries: [...prevState.entries, { date: this.state.date, intensity: this.state.intensity, duration: this.state.duration }]
+      entries: [...prevState.entries, this.state.newEntry]
     }));
   }
 
@@ -48,16 +61,16 @@ class App extends Component {
           <tbody>
             {this.state.entries.map(e => 
               (<tr>
-                <td>{e.date}</td>
+                <td>{new Date(e.date).toLocaleDateString()}</td>
                 <td>{e.intensity}</td>
                 <td>{e.duration}</td>
                 <td>{e.intensity * e.duration}</td>
               </tr>)
             )}
             <tr>
-              <td><input name="date" type="date" className="form-control" value={this.state.date} onChange={this.handleInputChange} /></td>
-              <td><input name="intensity" type="number" className="form-control" value={this.state.intensity} onChange={this.handleInputChange} /></td>
-              <td><input name="duration" type="number" className="form-control" value={this.state.duration} onChange={this.handleInputChange} /></td>
+              <td><input name="date" type="date" className="form-control" value={this.state.newEntry.date} onChange={this.handleInputChange} /></td>
+              <td><input name="intensity" type="number" className="form-control" value={this.state.newEntry.intensity} onChange={this.handleInputChange} /></td>
+              <td><input name="duration" type="number" className="form-control" value={this.state.newEntry.duration} onChange={this.handleInputChange} /></td>
               <td><input type="submit" value="Add" className="btn btn-primary" onClick={this.addEntry} /></td>
             </tr>
           </tbody>
