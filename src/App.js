@@ -2,6 +2,15 @@ import React, { Component } from 'react';
 import './App.css';
 
 class App extends Component {
+
+  entries = [
+    {
+      date: '25 Feb 2018',
+      intensity: 8,
+      duration: 20,
+    }
+  ]
+
   render() {
     return (
       <div className="container">
@@ -15,12 +24,14 @@ class App extends Component {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>25 Feb 2018</td>
-              <td>8</td>
-              <td>20</td>
-              <td>160</td>
-            </tr>
+            {this.entries.map(e => 
+              (<tr>
+                <td>{e.date}</td>
+                <td>{e.intensity}</td>
+                <td>{e.duration}</td>
+                <td>{e.intensity * e.duration}</td>
+              </tr>)
+            )}
           </tbody>
         </table>
       </div>
