@@ -1,18 +1,29 @@
 import React, { Component } from 'react';
 import './App.css';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import Slider from 'material-ui/Slider'
-import DatePicker from 'material-ui/DatePicker'
-import TimePicker from 'material-ui/TimePicker'
 
 class App extends Component {
   render() {
     return (
-      <MuiThemeProvider>
-        <DatePicker />
-        <Slider />
-        <TimePicker format="24hr" />
-      </MuiThemeProvider>
+      <div className="container">
+        <table className="table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Intensity (sRPE)</th>
+              <th>Duration (minutes)</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>25 Feb 2018</td>
+              <td>8</td>
+              <td>20</td>
+              <td>160</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     );
   }
 }
