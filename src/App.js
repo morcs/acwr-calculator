@@ -1,80 +1,72 @@
 import React, { Component } from 'react';
 import './App.css';
+import update from 'immutability-helper'
 
 class App extends Component {
 
   constructor(props) {
     super(props);
     
-    const date = this.toDateInputValue(new Date());
-
     this.state = { 
-      newEntry: {
-        date: date,
-        intensity: null,
-        duration: null
-      },
-      entries: []
+      sessions: [ { intensity: 5, duration: 30 } ]
     }
 
-    this.addEntry = this.addEntry.bind(this);
-    this.handleInputChange = this.handleInputChange.bind(this);
+    this.addSession = this.addSession.bind(this);
+    this.updateSession = this.updateSession.bind(this);
   }
 
-  toDateInputValue(date) {
-    const dateEl = document.createElement("input");
-    dateEl.setAttribute("type", "date");
-    dateEl.valueAsDate = new Date();
-    return dateEl.value;
+  addSession() {
+    this.setState(prevState => ({
+      sessions: [...prevState.sessions, { intensity: "", duration: "" }]
+    }));
   }
 
-  handleInputChange(event) {
+  updateSession(event, index) {
     const target = event.target;
-    const value = target.value;
+    const value = target.type === 'checkbox' ? target.checked : target.value;
     const name = target.name;
 
-    this.setState(prevState => ({
-      newEntry: Object.assign(this.state.newEntry,  {
-        [name]: value
-      })
+    this.setState(prevState => update(prevState, {
+      sessions: { 
+        [index]: {
+          [name]: {$set: value}
+        } 
+      }
     }));
+
+    console.log(this.state.sessions);
   }
 
-  addEntry() {
-    this.setState(prevState => ({
-      entries: [...prevState.entries, this.state.newEntry]
-    }));
-  }
+  renderSession
 
   render() {
     return (
       <div className="container">
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Intensity (sRPE)</th>
-              <th>Duration (minutes)</th>
-              <th>Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            {this.state.entries.map(e => 
-              (<tr>
-                <td>{new Date(e.date).toLocaleDateString()}</td>
-                <td>{e.intensity}</td>
-                <td>{e.duration}</td>
-                <td>{e.intensity * e.duration}</td>
-              </tr>)
-            )}
-            <tr>
-              <td><input name="date" type="date" className="form-control" value={this.state.newEntry.date} onChange={this.handleInputChange} /></td>
-              <td><input name="intensity" type="number" className="form-control" value={this.state.newEntry.intensity} onChange={this.handleInputChange} /></td>
-              <td><input name="duration" type="number" className="form-control" value={this.state.newEntry.duration} onChange={this.handleInputChange} /></td>
-              <td><input type="submit" value="Add" className="btn btn-primary" onClick={this.addEntry} /></td>
-            </tr>
-          </tbody>
-        </table>
+        <p>Start by telling us what a typical training week involves</p>
+        {this.state.sessions.map((session, index) => {
+          return (
+            <div className="panel panel-default" key={index}>
+              <div className="panel-heading">
+                Session {index + 1}
+                <span className="glyphicon glyphicon-remove pull-right" aria-hidden="true"></span>
+              </div>
+              <div className="panel-body">
+                <div className="form-group">
+                  <label className="sr-only" htmlFor="intensity">Intensity/sRPE (1-10)</label>
+                  <input name="intensity" type="number" value={session.intensity} className="form-control" id="intensity" placeholder="Intensity/sRPE (1-10)" onChange={(event) => this.updateSession(event, index)} />
+                </div>
+                {' '}
+                <div className="form-group">
+                  <label className="sr-only" htmlFor="duration">Duration (mins)</label>
+                  <input name="duration" type="number" value={session.duration} className="form-control" id="duration" placeholder="Duration (mins)" onChange={(event) => this.updateSession(event, index)} />
+                </div>
+              </div>
+            </div>
+          );
+        })}
+        <button className="btn btn-default" onClick={this.addSession}>
+          <span className="glyphicon glyphicon-plus" aria-hidden="true"></span> Add session
+        </button>
       </div>
     );
   }
