@@ -26,8 +26,6 @@ class App extends Component {
     this.setState(prevState => update(prevState, {
       sessions: { $splice: [[index, 1]] }
     }));
-
-    console.log(this.state.sessions);
   }
 
   updateSession(event, index) {
@@ -71,9 +69,18 @@ class App extends Component {
             </div>
           );
         })}
-        <button className="btn btn-default" onClick={this.addSession}>
-          <span className="glyphicon glyphicon-plus" aria-hidden="true"></span> Add session
-        </button>
+        <div className="row form-group">
+          <div className="col-sm-12">
+            <button className="btn btn-default" onClick={this.addSession}>
+              <span className="glyphicon glyphicon-plus" aria-hidden="true"></span> Add session
+            </button>
+            {this.state.sessions.length > 0 && 
+              <button className="btn btn-primary pull-right">
+                <span className="glyphicon glyphicon-ok" aria-hidden="true"></span> Week complete
+              </button>
+            }
+          </div>
+        </div>
       </div>
     );
   }
