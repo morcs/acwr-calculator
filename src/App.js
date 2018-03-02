@@ -1,10 +1,22 @@
+// @flow
 import React, { Component } from 'react';
 import './App.css';
 import update from 'immutability-helper'
 
-class App extends Component {
+type Props = { }
 
-  constructor(props) {
+type Session = {
+  intensity: ?number,
+  duration: ?number
+}
+
+type State = { 
+  sessions: Array<Session>
+};
+
+class App extends Component<Props, State> {
+
+  constructor(props: any) {
     super(props);
     
     this.state = { 
@@ -14,21 +26,22 @@ class App extends Component {
     this.addSession = this.addSession.bind(this);
     this.updateSession = this.updateSession.bind(this);
     this.removeSession = this.removeSession.bind(this);
+    this.undefinedToEmpty = this.undefinedToEmpty.bind(this);
   }
 
-  addSession() {
+  addSession = () => {
     this.setState(prevState => ({
-      sessions: [...prevState.sessions, { intensity: "", duration: "" }]
+      sessions: [...prevState.sessions, { intensity: undefined, duration: undefined }]
     }));
   }
 
-  removeSession(index) {
+  removeSession = (index: number) => {
     this.setState(prevState => update(prevState, {
       sessions: { $splice: [[index, 1]] }
     }));
   }
 
-  updateSession(event, index) {
+  updateSession = (event: SyntheticInputEvent<>, index: number) => {
     const target = event.target;
     const value = target.type === 'checkbox' ? target.checked : target.value;
     const name = target.name;
@@ -40,6 +53,14 @@ class App extends Component {
         } 
       }
     }));
+  }
+
+  generate4Weeks(sessions: Array<Session>) {
+
+  }
+
+  undefinedToEmpty = (value: any) => {
+    return !value && value !== 0 ? '' : value;
   }
 
   render() {
@@ -56,12 +77,12 @@ class App extends Component {
               <div className="panel-body">
                 <div className="form-group">
                   <label className="sr-only" htmlFor="intensity">Intensity/sRPE (1-10)</label>
-                  <input name="intensity" type="number" value={session.intensity} className="form-control" id="intensity" placeholder="Intensity/sRPE (1-10)" onChange={(event) => this.updateSession(event, index)} />
+                  <input name="intensity" type="number" value={this.undefinedToEmpty(session.intensity)} className="form-control" id="intensity" placeholder="Intensity/sRPE (1-10)" onChange={(event) => this.updateSession(event, index)} />
                 </div>
                 {' '}
                 <div className="form-group">
                   <label className="sr-only" htmlFor="duration">Duration (mins)</label>
-                  <input name="duration" type="number" value={session.duration} className="form-control" id="duration" placeholder="Duration (mins)" onChange={(event) => this.updateSession(event, index)} />
+                  <input name="duration" type="number" value={this.undefinedToEmpty(session.duration)} className="form-control" id="duration" placeholder="Duration (mins)" onChange={(event) => this.updateSession(event, index)} />
                 </div>
               </div>
             </div>
