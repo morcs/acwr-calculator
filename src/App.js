@@ -8,17 +8,26 @@ class App extends Component {
     super(props);
     
     this.state = { 
-      sessions: [ { intensity: 5, duration: 30 } ]
+      sessions: []
     }
 
     this.addSession = this.addSession.bind(this);
     this.updateSession = this.updateSession.bind(this);
+    this.removeSession = this.removeSession.bind(this);
   }
 
   addSession() {
     this.setState(prevState => ({
       sessions: [...prevState.sessions, { intensity: "", duration: "" }]
     }));
+  }
+
+  removeSession(index) {
+    this.setState(prevState => update(prevState, {
+      sessions: { $splice: [[index, 1]] }
+    }));
+
+    console.log(this.state.sessions);
   }
 
   updateSession(event, index) {
@@ -33,8 +42,6 @@ class App extends Component {
         } 
       }
     }));
-
-    console.log(this.state.sessions);
   }
 
   renderSession
@@ -48,7 +55,7 @@ class App extends Component {
             <div className="panel panel-default" key={index}>
               <div className="panel-heading">
                 Session {index + 1}
-                <span className="glyphicon glyphicon-remove pull-right" aria-hidden="true"></span>
+                <span className="glyphicon glyphicon-remove pull-right" aria-hidden="true" onClick={() => this.removeSession(index)}></span>
               </div>
               <div className="panel-body">
                 <div className="form-group">
