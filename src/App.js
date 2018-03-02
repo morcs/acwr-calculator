@@ -42,8 +42,6 @@ class App extends Component {
     }));
   }
 
-  renderSession
-
   render() {
     return (
       <div className="container">
