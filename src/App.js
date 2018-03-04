@@ -3,6 +3,9 @@ import React, { Component } from 'react';
 import './App.css';
 import update from 'immutability-helper'
 
+type AppState =
+  'Initial' | 'Main'
+
 type Props = { }
 
 type Session = {
@@ -11,6 +14,7 @@ type Session = {
 }
 
 type State = { 
+  app: AppState,
   sessions: Array<Session>
 };
 
@@ -20,18 +24,21 @@ class App extends Component<Props, State> {
     super(props);
     
     this.state = { 
-      sessions: []
+      app: 'Initial',
+      sessions: [],
+      
     }
 
     this.addSession = this.addSession.bind(this);
     this.updateSession = this.updateSession.bind(this);
     this.removeSession = this.removeSession.bind(this);
     this.undefinedToEmpty = this.undefinedToEmpty.bind(this);
+    this.generate4Weeks = this.generate4Weeks.bind(this);
   }
 
   addSession = () => {
     this.setState(prevState => ({
-      sessions: [...prevState.sessions, { intensity: undefined, duration: undefined }]
+      sessions: [...prevState.sessions, { intensity: 7, duration: undefined }]
     }));
   }
 
@@ -55,8 +62,12 @@ class App extends Component<Props, State> {
     }));
   }
 
-  generate4Weeks(sessions: Array<Session>) {
+  generate4Weeks = (e: SyntheticEvent<>, sessions: Array<Session>) => {
+    e.preventDefault();
 
+    this.setState(prevState => update(prevState, {
+      app: { $set: 'Main' }
+    }));
   }
 
   undefinedToEmpty = (value: any) => {
@@ -64,44 +75,60 @@ class App extends Component<Props, State> {
   }
 
   render() {
-    return (
-      <div className="container">
-        <p>Start by telling us what a typical training week involves</p>
-        {this.state.sessions.map((session, index) => {
-          return (
-            <div className="panel panel-default" key={index}>
-              <div className="panel-heading">
-                Session {index + 1}
-                <span className="glyphicon glyphicon-remove pull-right" aria-hidden="true" onClick={() => this.removeSession(index)}></span>
-              </div>
-              <div className="panel-body">
-                <div className="form-group">
-                  <label className="sr-only" htmlFor="intensity">Intensity/sRPE (1-10)</label>
-                  <input name="intensity" type="number" value={this.undefinedToEmpty(session.intensity)} className="form-control" id="intensity" placeholder="Intensity/sRPE (1-10)" onChange={(event) => this.updateSession(event, index)} />
+    return this.state.app === 'Initial' 
+      ? (
+        <div className="container">
+          <p>Start by telling us what a typical training week involves</p>
+          <form onSubmit={this.generate4Weeks}>
+          {this.state.sessions.map((session, index) => {
+            return (
+              <div className="panel panel-default" key={index}>
+                <div className="panel-heading">
+                  Session {index + 1}
+                  <span className="glyphicon glyphicon-remove pull-right" aria-hidden="true" onClick={() => this.removeSession(index)}></span>
                 </div>
-                {' '}
-                <div className="form-group">
-                  <label className="sr-only" htmlFor="duration">Duration (mins)</label>
-                  <input name="duration" type="number" value={this.undefinedToEmpty(session.duration)} className="form-control" id="duration" placeholder="Duration (mins)" onChange={(event) => this.updateSession(event, index)} />
+                <div className="panel-body">
+                  <div className="form-group">
+                    <label htmlFor="intensity">Intensity/sRPE (1-10)</label>
+                    <select name="intensity" value={session.intensity} className="form-control" id="intensity" onChange={(event) => this.updateSession(event, index)}>
+                      <option>1</option>
+                      <option>2</option>
+                      <option>3</option>
+                      <option>4</option>
+                      <option>5</option>
+                      <option>6</option>
+                      <option>7</option>
+                      <option>8</option>
+                      <option>9</option>
+                      <option>10</option>
+                    </select>
+                  </div>
+                  {' '}
+                  <div className="form-group">
+                    <label htmlFor="duration">Duration (mins)</label>
+                    <input name="duration" type="number" value={this.undefinedToEmpty(session.duration)} className="form-control" id="duration" placeholder="Duration (mins)" onChange={(event) => this.updateSession(event, index)} required />
+                  </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
-        <div className="row form-group">
-          <div className="col-sm-12">
-            <button className="btn btn-default" onClick={this.addSession}>
-              <span className="glyphicon glyphicon-plus" aria-hidden="true"></span> Add session
-            </button>
-            {this.state.sessions.length > 0 && 
-              <button className="btn btn-primary pull-right">
-                <span className="glyphicon glyphicon-ok" aria-hidden="true"></span> Week complete
+            );
+          })}
+          <div className="row form-group">
+            <div className="col-sm-12">
+              <button type="button" className="btn btn-default" onClick={this.addSession}>
+                <span className="glyphicon glyphicon-plus" aria-hidden="true"></span> Add session
               </button>
-            }
+              {this.state.sessions.length > 0 && 
+                <button className="btn btn-primary pull-right">
+                  <span className="glyphicon glyphicon-ok" aria-hidden="true"></span> Week complete
+                </button>
+              }
+            </div>
           </div>
-        </div>
-      </div>
-    );
+          </form>
+        </div>)
+        : (
+          <div>Main state</div>
+        );
   }
 }
 
