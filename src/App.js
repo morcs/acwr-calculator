@@ -13,9 +13,14 @@ type Session = {
   duration: ?number
 }
 
+type Week = {
+  sessions: Array<Session>
+}
+
 type State = { 
   app: AppState,
-  sessions: Array<Session>
+  sessions: Array<Session>,
+  weeks: Array<Week>
 };
 
 class App extends Component<Props, State> {
@@ -26,7 +31,7 @@ class App extends Component<Props, State> {
     this.state = { 
       app: 'Initial',
       sessions: [],
-      
+      weeks: []
     }
 
     this.addSession = this.addSession.bind(this);
@@ -65,8 +70,15 @@ class App extends Component<Props, State> {
   generate4Weeks = (e: SyntheticEvent<>, sessions: Array<Session>) => {
     e.preventDefault();
 
+    const iterations = [1,2,3,4];
+
+    const weeks = iterations.map(() => ({
+      sessions
+    }));
+
     this.setState(prevState => update(prevState, {
-      app: { $set: 'Main' }
+      app: { $set: 'Main' },
+      weeks: { $set: weeks }
     }));
   }
 
@@ -79,7 +91,7 @@ class App extends Component<Props, State> {
       ? (
         <div className="container">
           <p>Start by telling us what a typical training week involves</p>
-          <form onSubmit={this.generate4Weeks}>
+          <form onSubmit={e => this.generate4Weeks(e, this.state.sessions)}>
           {this.state.sessions.map((session, index) => {
             return (
               <div className="panel panel-default" key={index}>
@@ -127,7 +139,9 @@ class App extends Component<Props, State> {
           </form>
         </div>)
         : (
-          <div>Main state</div>
+          <div>{this.state.weeks.map((week, i) => (
+            <div key={i}>{week.sessions.length}</div>
+          ))}</div>
         );
   }
 }
