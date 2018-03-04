@@ -2,20 +2,12 @@
 import React, { Component } from 'react';
 import './App.css';
 import update from 'immutability-helper'
-
-type AppState =
-  'Initial' | 'Main'
+import { Week, Session } from './Model'
 
 type Props = { }
 
-type Session = {
-  intensity: number,
-  duration: ?number
-}
-
-type Week = {
-  sessions: Array<Session>
-}
+type AppState =
+  'Initial' | 'Main'
 
 type State = { 
   app: AppState,
