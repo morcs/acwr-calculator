@@ -129,6 +129,12 @@ class App extends Component<Props, State> {
     </div>
   );
 
+  pluralize = (unitName: string, count: number) => {
+    return count === 1 
+      ? `${count} ${unitName}`
+      : `${count} ${unitName}s`
+  }
+
   render() {
     return (
       <div className="container">
@@ -156,7 +162,7 @@ class App extends Component<Props, State> {
         : (
           <div>{this.state.weeks.map((week, i) => (
             <div key={i}>
-              <h3>{this.state.weeks.length - i} weeks ago ({this.getWeekTotal(week)})</h3>
+              <h3>{this.pluralize("week", this.state.weeks.length - i)} ago <span className="bg-success pull-right">{this.getWeekTotal(week)}</span></h3>
             </div>
           ))}</div>
         )}
