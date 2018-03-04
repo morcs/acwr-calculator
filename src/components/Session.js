@@ -9,13 +9,13 @@ type State = {};
 
 class App extends Component<Props, State> {
 
-  constructor(props: any) {
+  constructor(props: Props) {
     super(props);
   }
 
   render() {
     return (
-      <div className="container"></div>
+      <div></div>
     );
   }
 }
