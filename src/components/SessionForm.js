@@ -46,5 +46,4 @@ const SessionForm = ({ session, index, removeSession, updateSession }: Props) =>
       );
   }
 
-
 export default SessionForm;

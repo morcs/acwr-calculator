@@ -13,7 +13,8 @@ type AppState =
 type State = { 
   app: AppState,
   sessions: Array<Session>,
-  weeks: Array<Week>
+  weeks: Array<Week>,
+  thisWeek: ?Week
 };
 
 class App extends Component<Props, State> {
@@ -24,7 +25,8 @@ class App extends Component<Props, State> {
     this.state = { 
       app: 'Initial',
       sessions: [],
-      weeks: []
+      weeks: [],
+      thisWeek: null
     }
 
     this.addSession = this.addSession.bind(this);
@@ -59,6 +61,28 @@ class App extends Component<Props, State> {
     }));
   }
 
+  removeSessionFromThisWeek = (index: number) => {
+    this.setState(prevState => update(prevState, {
+      thisWeek: { sessions : { $splice: [[index, 1]] } }
+    }));
+  }
+
+  updateSessionFromThisWeek = (event: SyntheticInputEvent<>, index: number) => {
+    const target = event.target;
+    const value = target.type === 'checkbox' ? target.checked : target.value;
+    const name = target.name;
+
+    this.setState(prevState => update(prevState, {
+      thisWeek : {
+        sessions: { 
+          [index]: {
+            [name]: {$set: value}
+          } 
+        }
+      }
+    }));
+  }
+
   generate4Weeks = (e: SyntheticEvent<>, sessions: Array<Session>) => {
     e.preventDefault();
 
@@ -68,9 +92,14 @@ class App extends Component<Props, State> {
       sessions
     }));
 
+    const thisWeek = {
+      sessions
+    }
+
     this.setState(prevState => update(prevState, {
       app: { $set: 'Main' },
-      weeks: { $set: weeks }
+      weeks: { $set: weeks },
+      thisWeek: { $set: thisWeek }
     }));
   }
 
@@ -118,11 +147,20 @@ class App extends Component<Props, State> {
           </div>
         )
         : (
-          <div>{this.state.weeks.map((week, i) => (
-            <div key={i}>
-              <h3>{this.pluralize("week", this.state.weeks.length - i)} ago <span className="bg-success pull-right">{this.getWeekTotal(week)}</span></h3>
-            </div>
-          ))}</div>
+          <div>
+            {this.state.weeks.map((week, i) => (
+              <div key={i}>
+                <h3>{this.pluralize("week", this.state.weeks.length - i)} ago <span className="bg-success pull-right">{this.getWeekTotal(week)}</span></h3>
+              </div>
+            ))}
+            <h3>This week <span className="bg-success pull-right">{this.getWeekTotal(this.state.thisWeek)}</span></h3>
+
+            {this.state.thisWeek != null &&
+              this.state.thisWeek.sessions.map((session, index) => (
+                <SessionForm session={session} key={index} index={index} removeSession={this.removeSessionFromThisWeek} updateSession={this.updateSessionFromThisWeek} />
+              ))}
+            
+          </div>
         )}
         </div>);
   }
