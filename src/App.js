@@ -33,6 +33,7 @@ class App extends Component<Props, State> {
     this.updateSession = this.updateSession.bind(this);
     this.removeSession = this.removeSession.bind(this);
     this.generate4Weeks = this.generate4Weeks.bind(this);
+    this.getAwcr = this.getAwcr.bind(this);
   }
 
   addSession = () => {
@@ -120,6 +121,13 @@ class App extends Component<Props, State> {
     }
   }
 
+  getAwcr = () => {
+    const chronicAverage = this.state.weeks.map(this.getWeekTotal).reduce((acc, val) => acc + val) /
+      this.state.weeks.length;
+
+    return this.getWeekTotal(this.state.thisWeek) / chronicAverage;
+  }
+
   render() {
     return (
       <div className="container">
@@ -159,6 +167,10 @@ class App extends Component<Props, State> {
               this.state.thisWeek.sessions.map((session, index) => (
                 <SessionForm session={session} key={index} index={index} removeSession={this.removeSessionFromThisWeek} updateSession={this.updateSessionFromThisWeek} />
               ))}
+
+            <h3>ACWR</h3>
+
+            <p>{ this.getAwcr() }</p>
             
           </div>
         )}
